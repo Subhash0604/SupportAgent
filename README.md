@@ -1,9 +1,9 @@
-cat << 'EOF' > REPORT.md
+
 # Autonomous Customer Support AI Agent (AmazonHelp)
 **Author:** Subhash Chandra Peddireddy  
 **Stack:** FastAPI, Python 3.11+, Qdrant, Google Gemini API, Next.js 14, Tailwind CSS
 
----
+
 
 ## 1. Problem Framing: What "Good" Means for AmazonHelp
 
@@ -19,7 +19,7 @@ Building automated triage for Twitter customer support is deceptively tricky. Un
 * **Granular 50+ Intent Taxonomies:** Academic benchmarks like Banking77 classify dozens of hyper-specific intents. In practice, tiered support teams only care about the immediate routing destination. We condensed the taxonomy down to 6 operational buckets (`shipping_status`, `returns_refunds`, `damaged_stolen`, `account_access`, `general_complaint`, `out_of_scope`).
 * **Multi-Turn Chatbots on Public Threads:** Long Twitter back-and-forth threads look sloppy and expose customer grievances publicly. We built a single-turn resolution router designed to deflect or push directly to secure DM.
 
----
+ 
 
 ## 2. Golden Evaluation Set Methodology
 
@@ -39,7 +39,7 @@ I hand-annotated every record across four target fields:
 * `ground_truth_key_facts`: Explicit checklist items the drafted response must contain (e.g., "Must prompt for DM", "Must not promise refund publicly").
 * `human_tone_score` & `human_grounding_score`: 1–5 ordinal rubric baseline used to calibrate the automated LLM judge.
 
----
+ 
 
 ## 3. Evaluation Harness & Human-Judge Agreement
 
@@ -59,7 +59,7 @@ We ran a blind calibration study on a 30-sample subset scored independently by t
 
 Because the judge achieved Kappa > 0.75 across both ordinal rubrics and the binary acceptance decision, we can trust the automated benchmark runs to reflect real human QA standards.
 
----
+ 
 
 ## 4. Experimental Results vs. Baselines
 
@@ -79,7 +79,7 @@ We evaluated three architectures across the curated test set:
 * Zero-shot Gemini writes eloquent answers, but misses subtle PII leaks (like 17-digit order IDs) and often tries to solve complex payment issues directly in public text.
 * Adding the RAG exemplars from Qdrant grounds the reply style in real AmazonHelp language, while the deterministic regex layer pushes Escalation Recall up to **95.0%**.
 
----
+ 
 
 ## 5. Failure Analysis: Top 5 Failure Modes
 
@@ -115,7 +115,7 @@ Looking at where the RAG agent stumbled during benchmark runs reveals where pure
 * **Why It Failed:** Kaggle data occasionally contains standalone tweets stripped of their parent conversational context (`in_reply_to_status_id`). Isolated replies are unclassifiable.
 * **Fix:** In production, wrap the Twitter API call to pull the previous 2 turns of the thread before passing the payload to FastAPI.
 
----
+ 
 
 ## 6. "What Is Misleading About My Headline Number?"
 
@@ -125,7 +125,7 @@ Every ML evaluation has structural blind spots. Here is what our **0.88 Macro F1
 2. **The "Canned DM" Shortcut:** In the historical Kaggle dataset, human Amazon agents frequently send a stock canned reply: *"We'd like to look into this. Please reach out via DM."* Because that generic reply fits almost any problem, an LLM judge evaluating "policy grounding" gives high scores to replies that might actually feel dismissive to a customer looking for a direct answer.
 3. **Survival Bias of Twitter Complaints:** Customers who tweet at Amazon represent a skewed demographic—people who are more vocal, tech-savvy, or frustrated than average customers who resolve issues via the mobile app. The model's high score reflects performance on this specific subset, not on all Amazon customer touchpoints.
 
----
+ 
 
 ## 7. What I Would Do Next with One More Week
 
@@ -134,7 +134,7 @@ Every ML evaluation has structural blind spots. Here is what our **0.88 Macro F1
 3. **Dynamic Few-Shot Reranking (MMR):** Implement Maximal Marginal Relevance in Qdrant retrieval to eliminate redundant exemplar replies and expose the LLM to diverse response styles.
 4. **Automated Redaction Pre-Processor:** Instead of solely escalating when PII is detected, redact the sensitive snippet (`[REDACTED_ORDER_ID]`) before feeding the text to the model to reduce token exposure.
 
----
+ 
 
 ## 8. Decision Log
 
@@ -151,7 +151,7 @@ A chronological breakdown of technical trade-offs made during development:
 * **Rate-Limit Resilient Benchmark Harness:** Added automated backoff (`delay = 15.0`) in the benchmark runner to handle API rate limits smoothly without crashing long evaluation runs.
 * **Excluding Raw CSV from Git History:** Kept the 492 MB raw dataset out of Git history and used a lightweight, high-signal golden set (`golden_eval.jsonl`) for tests, keeping the repository fast to clone.
 
----
+ 
 
 ## 9. Quickstart: Running Locally
 
@@ -164,3 +164,12 @@ pip install -r requirements.txt
 
 # Run the API server
 uvicorn app.main:app --reload --port 8000
+
+
+#Running the Evaluation Suite
+
+# Run LLM-as-a-judge calibration study
+python eval/llm_judge.py
+
+# Run comparative baseline benchmarks
+python eval/run_benchmarks.py
