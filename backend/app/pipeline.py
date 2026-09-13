@@ -22,12 +22,12 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 gemini_client = genai.Client(api_key=GEMINI_API_KEY)
 qdrant = QdrantClient(path=QDRANT_PATH)
 
-# Deterministic PII and threat detectors
+
 PII_PATTERNS = [
-    re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"),  # Email
-    re.compile(r"\b\d{3}[-.\s]??\d{3}[-.\s]??\d{4}\b"),                  # Phone
-    re.compile(r"\b(?:\d[ -]*?){13,16}\b"),                              # Credit Card
-    re.compile(r"\b\d{3}-\d{7}-\d{7}\b"),                                # Amazon Order ID
+    re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"),   
+    re.compile(r"\b\d{3}[-.\s]??\d{3}[-.\s]??\d{4}\b"),                  
+    re.compile(r"\b(?:\d[ -]*?){13,16}\b"),                               
+    re.compile(r"\b\d{3}-\d{7}-\d{7}\b"),                                
 ]
 
 TRIAGE_JSON_SCHEMA = {
@@ -78,7 +78,7 @@ def retrieve_exemplars(query_text: str, top_k: int = 3) -> List[RetrievedContext
     )
     query_vector = embed_response.embeddings[0].values
 
-    # Support both modern query_points() and legacy search()
+     
     if hasattr(qdrant, "query_points"):
         response = qdrant.query_points(
             collection_name="brand_history",
