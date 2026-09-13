@@ -1,0 +1,12 @@
+{
+  "sample_size": 14,
+  "binary_decision_kappa": 1.0,
+  "tone_score_quadratic_kappa": 0.542,
+  "grounding_score_quadratic_kappa": 0.77,
+  "confusion_matrix_accept_decision": {
+    "TN_reject_reject": 1,
+    "FP_reject_accept": 0,
+    "FN_accept_reject": 0,
+    "TP_accept_accept": 13
+  }
+}
