@@ -16,7 +16,7 @@ if not GEMINI_API_KEY:
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-# Define explicit JSON schema dictionary to prevent AFC warnings
+ 
 JUDGE_JSON_SCHEMA = {
     "type": "object",
     "properties": {
